@@ -1,29 +1,22 @@
 import express from "express";
 import userRoutes from "./routes/user.routes.js";
+import cookieSession from "cookie-session";
+import {COOKIE_KEY, CORS_ORIGIN} from "./config/config.js";
 
 const app = express();
+
 app.use(express.json());
 
-import http from "http";
-import {Server} from 'socket.io'
+const sessionMiddleware = cookieSession({
+    resave: true,
+    name: 'session',
+    keys: [COOKIE_KEY],
+    domain: 'localhost',
 
-const server = http.createServer(app);
-const io = new Server(server);
+    cookie: {maxAge: 24 * 60 * 60 * 1000},
+})
 
-import messageController from "./controller/socket/messageController.js";
-import connectionController from "./controller/socket/connectionController.js";
-import channelController from "./controller/socket/channelController.js";
-
-io.on('connection', (socket) => {
-
-    connectionController(io, socket);
-    messageController(io, socket);
-    channelController(io, socket);
-});
-
-server.listen(3000, () => {
-    console.log('socket.io running at http://localhost:3000');
-});
+app.use(sessionMiddleware);
 
 app.get("/", (req, res) => {
     res.send("Todo ok");
@@ -31,5 +24,31 @@ app.get("/", (req, res) => {
 
 app.use("/user", userRoutes);
 
+//Socket IO
+import http from "http";
+import {Server} from 'socket.io'
+import connectionController from "./controller/socket/connectionController.js";
+import messageController from "./controller/socket/messageController.js";
+import channelController from "./controller/socket/channelController.js";
+import authFilterCookie from "./middleware/socket/authFilterCookie.js";
 
-export default app;
+const server = http.createServer(app);
+const io = new Server(server, {
+    cors: {
+        origin: CORS_ORIGIN,
+        credentials: true,
+    },
+});
+
+io.engine.use(sessionMiddleware);
+io.use(authFilterCookie);
+
+io.on('connection', async (socket) => {
+    socket.join(socket.userId);
+
+    connectionController(io, socket);
+    messageController(io, socket);
+    channelController(io, socket);
+});
+
+export {app, server};

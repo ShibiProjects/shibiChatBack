@@ -1,12 +1,9 @@
+import SocketUser from "../../model/socketUser.model.js";
+
 export default function (io, socket) {
-    socket.on('connect', () => {
-        console.log('Un usuario se ha conectado:', socket.id);
-
-        socket.emit('welcome', '¡Bienvenido al chat!');
-    });
-
-    socket.on('disconnect', () => {
-        console.log('Un usuario se ha desconectado:', socket.id);
+    socket.on('disconnect', async () => {
+        await SocketUser.findOneAndDelete({socketId: socket.id, userUsername: socket.userId});
+        console.log(socket.id, " ---- ", socket.userId);
     });
 
     socket.on('connect_error', (err) => {
