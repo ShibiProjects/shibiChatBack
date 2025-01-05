@@ -22,11 +22,11 @@ const userRegister = async (req, res) => {
 const userLogin = async (req, res) => {
     try {
         const user = req.user;
-        const token = user.generateAuthToken();
+        req.session.userId = user._id;
 
         return res
             .status(200)
-            .json({message: "User logged in successfully", token});
+            .json({message: "User logged in successfully"});
     } catch (error) {
         return res
             .status(500)

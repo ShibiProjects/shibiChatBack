@@ -39,7 +39,6 @@
 | sendMessage               | Enviá un mensaje                                  | receiveMessage               |
 | sendMessageToSpecificUser | Enviá un mensaje a un usuario en especifico       | receiveMessageToSpecificUser |
 
-
 **Tareas por investigar a posterior**
 
 * Crear Script para AWS
@@ -47,3 +46,23 @@
 * Escalabilidad de mongoDB (tener idea como trabaja más que nada)
 * Optimizaciones de Socket.io para ahorrar costos (es caro tener canales abiertos (websocket))
 * Investigar formas de evitar colisión de canal con el identificador de usuario (mongoDB)
+
+# BackEnd
+Los registros de 'socketusers'(mongoDB) tienen una vida util igual al tiempo de la conexión de socket io, ya que se eliminan al ejecutar el evento 'disconnect'.
+
+# **BackEnd variables útiles** .
+
+| Nombre             | Descripción                                        |
+|--------------------|----------------------------------------------------|
+| socket.userId      | Contiene el username del modelo User               |
+| socket.id          | Contiene el identificador de la conexión socket io |
+| req.session.userId | Contiene el identificador (_id) del modelo User    |
+
+
+
+### Variables de entorno
+
+1. SERVER_PORT
+2. MONGO_URI
+3. COOKIE_KEY
+4. CORS_ORIGIN

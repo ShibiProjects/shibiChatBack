@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema({
@@ -30,14 +29,6 @@ userSchema.pre("save", async function (next) {
         next(err);
     }
 });
-
-userSchema.methods.generateAuthToken = function () {
-    // Aquí generamos un token con la información del usuario
-    const token = jwt.sign({_id: this._id}, "yourSecretKey", {
-        expiresIn: "1h",
-    });
-    return token;
-};
 
 userSchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password);
