@@ -9,9 +9,19 @@ export default function (io, socket) {
         socket.broadcast.to(channelName).emit('newUserJoined', `${socket.userId} se ha unido al canal '${channelName}'`);
     });
 
+    socket.on('leaveChannel', (channelName) => {
+        console.log(`${socket.userId} salio del canal: ${channelName}`);
+
+        socket.leave(channelName);
+
+        io.to(channelName).emit('channelMessage', {
+            channelName: channelName,
+            message: `${socket.userId} a salido del canal`
+        });
+    })
+
     socket.on('sendMessageToChannel', (channelName, message) => {
         console.log(`Enviando mensaje al canal ${channelName}: ${message}`);
-        io.to(channelName).emit('channelMessage',
-            {channelName: channelName, message: message});
+        io.to(channelName).emit('channelMessage', {channelName: channelName, message: message});
     });
 }

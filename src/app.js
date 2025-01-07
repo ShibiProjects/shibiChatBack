@@ -2,6 +2,7 @@ import express from "express";
 import userRoutes from "./routes/user.routes.js";
 import cookieSession from "cookie-session";
 import {COOKIE_KEY, CORS_ORIGIN} from "./config/config.js";
+import cors from "cors";
 
 const app = express();
 
@@ -15,6 +16,13 @@ const sessionMiddleware = cookieSession({
 
     cookie: {maxAge: 24 * 60 * 60 * 1000},
 })
+
+app.use(
+    cors({
+        origin: [CORS_ORIGIN],
+        credentials: true,
+    })
+);
 
 app.use(sessionMiddleware);
 
@@ -34,6 +42,7 @@ import authFilterCookie from "./middleware/socket/authFilterCookie.js";
 
 const server = http.createServer(app);
 const io = new Server(server, {
+    path: '/socket',
     cors: {
         origin: CORS_ORIGIN,
         credentials: true,
