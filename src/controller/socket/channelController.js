@@ -22,6 +22,10 @@ export default function (io, socket) {
 
     socket.on('sendMessageToChannel', (channelName, message) => {
         console.log(`Enviando mensaje al canal ${channelName}: ${message}`);
-        io.to(channelName).emit('channelMessage', {channelName: channelName, message: message});
+        io.to(channelName).emit('channelMessage', {
+            channelName: channelName,
+            fromUser: socket.userId,
+            message: message
+        });
     });
 }
