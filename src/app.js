@@ -1,7 +1,7 @@
 import express from "express";
 import userRoutes from "./routes/user.routes.js";
 import cookieSession from "cookie-session";
-import {COOKIE_KEY, CORS_ORIGIN} from "./config/config.js";
+import {COOKIE_KEY, CORS_ORIGIN,SERVER_DOMAIN} from "./config/config.js";
 import cors from "cors";
 
 const app = express();
@@ -12,7 +12,9 @@ const sessionMiddleware = cookieSession({
     resave: true,
     name: 'session',
     keys: [COOKIE_KEY],
-    domain: 'localhost',
+    domain: SERVER_DOMAIN,
+    sameSite: 'None',
+    secure: false,
 
     cookie: {maxAge: 24 * 60 * 60 * 1000},
 })
