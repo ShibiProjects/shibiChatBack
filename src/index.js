@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {app, server} from "./app.js";
+import {appServer, server} from "./app.js";
 import {MONGO_URI, SERVER_PORT} from "./config/config.js";
 
 
@@ -17,6 +17,6 @@ mongoose
 
 
 // Server Rest
-app.listen(SERVER_PORT, () => {
+appServer.listen(SERVER_PORT, () => {
     console.log(`Server is running on port http://localhost:${SERVER_PORT}`);
 });

@@ -3,8 +3,14 @@ import userRoutes from "./routes/user.routes.js";
 import cookieSession from "cookie-session";
 import {COOKIE_KEY, CORS_ORIGIN,SERVER_DOMAIN} from "./config/config.js";
 import cors from "cors";
+import fs from "fs";
 
 const app = express();
+
+const optionsSSL = {
+    key: fs.readFileSync('nginx.key'),
+    cert: fs.readFileSync('nginx.crt'),
+};
 
 app.use(express.json());
 
@@ -35,14 +41,16 @@ app.get("/", (req, res) => {
 app.use("/user", userRoutes);
 
 //Socket IO
-import http from "http";
+import https from "https";
 import {Server} from 'socket.io'
 import connectionController from "./controller/socket/connectionController.js";
 import messageController from "./controller/socket/messageController.js";
 import channelController from "./controller/socket/channelController.js";
 import authFilterCookie from "./middleware/socket/authFilterCookie.js";
 
-const server = http.createServer(app);
+
+
+const server = https.createServer(optionsSSL,app);
 const io = new Server(server, {
     path: '/socket',
     cors: {
@@ -62,4 +70,6 @@ io.on('connection', async (socket) => {
     channelController(io, socket);
 });
 
-export {app, server};
+const appServer = https.createServer(optionsSSL, app);
+
+export {appServer, server};
