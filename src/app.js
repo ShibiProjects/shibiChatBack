@@ -20,7 +20,8 @@ const sessionMiddleware = cookieSession({
     keys: [COOKIE_KEY],
     domain: SERVER_DOMAIN,
     sameSite: 'None',
-    secure: false,
+    secure: true,
+    partitioned: true,
 
     cookie: {maxAge: 24 * 60 * 60 * 1000},
 })
