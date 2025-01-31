@@ -3,8 +3,12 @@ import {
     userDelete, userLogin, userRegister, userUpdate,
 } from "../controller/user.controller.js";
 import {
-    validationRegister, validationLogin, validationCredentials, validationUpdate,
-} from "../middleware/user.validation.js";
+    validationCredentials,
+    validationLogin,
+    validationRegister,
+    validationUpdate
+} from "../middleware/user.validation";
+
 
 
 const router = express.Router();

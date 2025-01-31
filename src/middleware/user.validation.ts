@@ -1,5 +1,6 @@
-import {body, validationResult, param} from "express-validator";
+import {body, param, validationResult} from "express-validator";
 import User from "../model/user.model.js";
+import {NextFunction, Request, Response} from "express";
 
 const validationRegister = [
     body("username")
@@ -23,8 +24,8 @@ const validationRegister = [
         .withMessage("Password must be a string")
         .isLength({min: 6})
         .withMessage("Password must be at least 6 characters long"),
-    (req, res, next) => {
-        const errors = validationResult(req, res);
+    (req: Request, res: Response, next: NextFunction): any => {
+        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({errors: errors.array()});
         }
@@ -44,8 +45,8 @@ const validationLogin = [
         .withMessage("Password is required")
         .isString()
         .withMessage("Password must be a string"),
-    (req, res, next) => {
-        const errors = validationResult(req, res);
+    (req: Request, res: Response, next: NextFunction): any => {
+        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({errors: errors.array()});
         }
@@ -74,8 +75,8 @@ const validationUpdate = [
         .isLength({min: 6})
         .withMessage("Password must be at least 6 characters long"),
 
-    (req, res, next) => {
-        const errors = validationResult(req, res);
+    (req: Request, res: Response, next: NextFunction): any => {
+        const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({errors: errors.array()});
         }
@@ -83,11 +84,11 @@ const validationUpdate = [
     },
 ];
 
-const validationCredentials = async (req, res, next) => {
+export async function validationCredentials(req: Request, res: Response, next: NextFunction): Promise<any> {
     const {email, password} = req.body;
 
     try {
-        const user = await User.findOne({email});
+        const user = await User.findOne({userEmail: email});
         if (!user) {
             return res.status(401).json({error: "Unauthorized, invalid email"});
         }
@@ -100,17 +101,15 @@ const validationCredentials = async (req, res, next) => {
 
         req.user = user;
         next();
-    } catch (error) {
+    } catch (error: any) {
         return res.status(500).json({
             error: "Internal server error validation",
             message: error.message,
         });
     }
-};
-
+}
 export {
     validationRegister,
     validationLogin,
-    validationCredentials,
     validationUpdate,
 };
